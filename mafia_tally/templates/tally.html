@@ -4,8 +4,8 @@
 
 <h1>Day {{ config.day_id }} Votes</h1>
 <div class="visual-tally">
-    {%- for victim, voters in tally.votes.items() %}
-    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter) }}{% endfor %}</p>
+    {%- for victim, voters in votes %}
+    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter) }}{% endfor %} ({{ tally.num_votes[victim] }})</p>
     {%- endfor %}
 
     <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player) }}{% endfor %}</p>

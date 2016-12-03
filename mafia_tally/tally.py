@@ -97,10 +97,12 @@ def index():
             else:
                 num_skipped += 1
 
+        votes = sorted(tally.votes.items(), key=lambda x: -tally.num_votes[x[0]])
+
         # FIXME can we avoid this dance?
         pictures = {member['name']: member['picture']['data']['url'] for member in fetch_members()}
 
-        page = render_template('tally.html', now=arrow.utcnow(), tally=tally,
+        page = render_template('tally.html', now=arrow.utcnow(), tally=tally, votes=votes,
                                config=config, comments=comment_details, pictures=pictures)
         cache.write_day_html(page)
 
