@@ -1,5 +1,4 @@
 import arrow
-import werkzeug.security
 from flask import request, render_template
 
 from .app import app
@@ -7,16 +6,12 @@ from . import config
 from . import tally
 
 
-def check_admin_password(password):
-    return werkzeug.security.check_password_hash(config.get_passhash(), password)
-
-
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'GET':
         return render_template('admin.html', config=config)
 
-    if check_admin_password(request.form['password']):
+    if config.check_admin_password(request.form['password']):
         post_id = int(request.form['post_id'])
         day_id = int(request.form['day_id'])
         cutoff = arrow.get(request.form['cutoff']).floor('second')

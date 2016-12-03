@@ -1,6 +1,8 @@
 import json
 import os
 
+import werkzeug.security
+
 
 config_dir = os.path.join(os.path.dirname(__file__), '..', 'config')
 get_path = lambda filename: os.path.join(config_dir, filename)
@@ -24,6 +26,10 @@ def get_access_token():
 def get_passhash():
     with open(admin_passhash_file) as f:
         return f.read().strip()
+
+
+def check_admin_password(password):
+    return werkzeug.security.check_password_hash(get_passhash(), password)
 
 
 def load_day_config():
