@@ -97,6 +97,8 @@ def index():
             else:
                 num_skipped += 1
 
+        cache.write_day_text(textify_tally(tally))
+
         votes = sorted(tally.votes.items(), key=lambda x: -tally.num_votes[x[0]])
 
         # FIXME can we avoid this dance?
