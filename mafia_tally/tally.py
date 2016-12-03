@@ -99,8 +99,12 @@ def index():
 
         # FIXME can we avoid this dance?
         pictures = {member['name']: member['picture']['data']['url'] for member in fetch_members()}
-        return wrap_page(title, render_template('tally.html', now=arrow.utcnow(), tally=tally,
-                                                config=config, comments=comment_details, pictures=pictures))
+
+        page = render_template('tally.html', now=arrow.utcnow(), tally=tally,
+                               config=config, comments=comment_details, pictures=pictures)
+        cache.write_day_html(page)
+
+        return wrap_page(title, page)
     else:
         return wrap_page(title, cache.read_day_html())
 
