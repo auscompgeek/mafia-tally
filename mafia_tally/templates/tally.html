@@ -1,0 +1,38 @@
+{% macro picture(name) -%}
+<img src="{{ pictures[name] }}" alt="{{ name }}" title="{{ name }}" width="48" height="48" />
+{%- endmacro %}
+
+<h1>Day {{ config.day_id }} Votes</h1>
+<div class="visual-tally">
+    {%- for victim, voters in tally.votes.items() %}
+    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter) }}{% endfor %}</p>
+    {%- endfor %}
+
+    <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player) }}{% endfor %}</p>
+    <p>Haven't voted: {% for player in tally.get_did_not_vote() %}{{ picture(player) }}{% endfor %}</p>
+</div>
+
+<p>Last updated: {{ now }}</p>
+
+<h2>Comments</h2>
+<table>
+    <thead><tr><th>User</th><th>Comment</th><th>Notes</th><th width="1"></th></tr></thead>
+    <tbody>
+        {%- for comment, details in comments %}
+        <tr>
+            {%- if comment is none %}
+            <td></td><td><i>({{ details }} comment{{ 's' * (details != 1) }} skipped)</i></td><td></td><td></td>
+            {% else %}
+            <td>{{ picture(comment.from.name) }}</td>
+            <td><b>{{ comment.from.name }}</b><br />{{ comment.message|e|replace('\n', '<br />')|safe }}</td>
+            <td>
+                {%- for detail in details %}
+                {{ detail }}
+                {%- endfor %}
+            </td>
+            <td><a href="https://www.facebook.com/groups/{{ config.group_id }}/permalink/{{ config.post_id }}?comment_id={{ comment.id }}">x</a></td>
+            {% endif %}
+        </tr>
+        {%- endfor %}
+    </tbody>
+</table>
