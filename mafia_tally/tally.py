@@ -93,6 +93,7 @@ def index():
             if is_vote:
                 if num_skipped:
                     comment_details.append((None, num_skipped))
+                    num_skipped = 0
                 comment_details.append((comment, details))
             else:
                 num_skipped += 1
