@@ -21,7 +21,7 @@
         {%- for comment, details in comments %}
         <tr>
             {%- if comment is none %}
-            <td></td><td><i>({{ details }} comment{{ 's' * (details != 1) }} skipped)</i></td><td></td><td></td>
+            <td></td><td><i>({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</i></td><td></td><td></td>
             {% else %}
             <td>{{ picture(comment.from.name) }}</td>
             <td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
