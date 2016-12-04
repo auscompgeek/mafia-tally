@@ -2,6 +2,7 @@ from io import StringIO
 
 import arrow
 from flask import abort, make_response, render_template, url_for
+from jinja2 import Markup, escape, evalcontextfilter
 
 from .app import app
 from . import cache
@@ -132,3 +133,11 @@ def all_tallies():
             pass
     html.append(HTML_FOOTER)
     return ''.join(html)
+
+
+@app.template_filter()
+@evalcontextfilter
+def nl2br(eval_ctx, value):
+    result = '<br />\n'.join(escape(x) for x in value.splitlines())
+    result = Markup(result)
+    return result
