@@ -106,7 +106,7 @@ def index():
         # FIXME can we avoid this dance?
         pictures = {member['name']: member['picture']['data']['url'] for member in fetch_members()}
 
-        page = render_template('tally.html', now=arrow.utcnow(), tally=tally, votes=votes,
+        page = render_template('tally.html', now=arrow.now(), tally=tally, votes=votes,
                                config=config, comments=comment_details, pictures=pictures)
         cache.write_day_html(page)
 
