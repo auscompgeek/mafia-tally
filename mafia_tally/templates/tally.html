@@ -24,7 +24,7 @@
             <td></td><td><i>({{ details }} comment{{ 's' * (details != 1) }} skipped)</i></td><td></td><td></td>
             {% else %}
             <td>{{ picture(comment.from.name) }}</td>
-            <td><b>{{ comment.from.name }}</b><br />{{ comment.message|nl2br }}</td>
+            <td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
             <td>
                 {%- for detail in details %}
                 {{ detail }}
