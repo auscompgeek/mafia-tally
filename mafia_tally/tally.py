@@ -116,7 +116,7 @@ def index():
 @app.route('/<int:day_id>')
 def day_page(day_id):
     try:
-        return cache.read_cache('%d.html' % day_id)
+        return wrap_page('Day %d Votes' % day_id, cache.read_cache('%d.html' % day_id))
     except FileNotFoundError:
         abort(404)
 
