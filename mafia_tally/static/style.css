@@ -7,3 +7,7 @@ body {
 a {
 	color: #49F;
 }
+
+.tally-count {
+	font-size: .8em;
+}
