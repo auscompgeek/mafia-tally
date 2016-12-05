@@ -1,5 +1,5 @@
-{% macro picture(name) -%}
-<img src="{{ pictures[name] }}" alt="{{ name }}" title="{{ name }}" width="50" height="50" />
+{% macro picture(name, alt=true) -%}
+<img src="{{ pictures[name] }}" alt="{% if alt %}{{ name }}{% endif %}" title="{{ name }}" width="50" height="50" />
 {%- endmacro %}
 
 <h1>Day {{ config.day_id }} Votes</h1>
@@ -23,7 +23,7 @@
             {%- if comment is none %}
             <td></td><td colspan="3"><i>({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</i></td>
             {% else %}
-            <td>{{ picture(comment.from.name) }}</td>
+            <td>{{ picture(comment.from.name, alt=false) }}</td>
             <td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
             <td>
                 {%- for detail in details %}
