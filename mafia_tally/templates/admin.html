@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Admin - Mafia Tally</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-    </head>
-    <body>
-        <h1>Mafia Tally Administration</h1>
-        <form method="POST">
-            <p><label>Password: <input name="password" type="password" /></label></p>
-            <fieldset>
-                <legend>Day config</legend>
-                <p><label>Post ID: <input name="post_id" type="number" value="{{ config.post_id }}" /></label></p>
-                <p><label>Day number: <input name="day_id" type="number" value="{{ config.day_id }}" /></label></p>
-                <p><label>Cutoff: <input name="cutoff" type="datetime" value="{{ config.cutoff }}" /></label></p>
-            </fieldset>
-            <fieldset>
-                <legend>Players to cull</legend>
-                <select name="dead" multiple size="10">
-                {%- for player in config.players|sort %}
-                    <option>{{ player }}</option>
-                {%- endfor %}
-                </select>
-            </fieldset>
-            <p><input type="submit" /></p>
-        </form>
-    </body>
+	<head>
+		<meta charset="utf-8" />
+		<title>Admin - Mafia Tally</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+	</head>
+	<body>
+		<h1>Mafia Tally Administration</h1>
+		<form method="POST">
+			<p><label>Password: <input name="password" type="password" /></label></p>
+			<fieldset>
+				<legend>Day config</legend>
+				<p><label>Post ID: <input name="post_id" type="number" value="{{ config.post_id }}" /></label></p>
+				<p><label>Day number: <input name="day_id" type="number" value="{{ config.day_id }}" /></label></p>
+				<p><label>Cutoff: <input name="cutoff" type="datetime" value="{{ config.cutoff }}" /></label></p>
+			</fieldset>
+			<fieldset>
+				<legend>Players to cull</legend>
+				<select name="dead" multiple size="10">
+				{%- for player in config.players|sort %}
+					<option>{{ player }}</option>
+				{%- endfor %}
+				</select>
+			</fieldset>
+			<p><input type="submit" /></p>
+		</form>
+	</body>
 </html>

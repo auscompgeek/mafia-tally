@@ -4,35 +4,35 @@
 
 <h1>Day {{ config.day_id }} Votes</h1>
 <div class="visual-tally">
-    {%- for victim, voters in votes %}
-    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter, alt_suffix=', ') }}{% endfor %} <span class="tally-count">({{ tally.num_votes[victim] }})</span></p>
-    {%- endfor %}
+	{%- for victim, voters in votes %}
+	<p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter, alt_suffix=', ') }}{% endfor %} <span class="tally-count">({{ tally.num_votes[victim] }})</span></p>
+	{%- endfor %}
 
-    <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
-    <p>Haven't voted: {% for player in tally.get_did_not_vote()|sort %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
+	<p>Abstaining: {% for player in tally.abstaining %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
+	<p>Haven't voted: {% for player in tally.get_did_not_vote()|sort %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
 </div>
 
 <p>Last updated: {{ now }}</p>
 
 <h2>Comments</h2>
 <table>
-    <thead><tr><th>User</th><th>Comment</th><th>Notes</th><th width="1"></th></tr></thead>
-    <tbody>
-        {%- for comment, details in comments %}
-        <tr>
-            {%- if comment is none %}
-            <td></td><td colspan="3"><i>({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</i></td>
-            {% else %}
-            <td>{{ picture(comment.from.name, alt=false) }}</td>
-            <td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
-            <td>
-                {%- for detail in details %}
-                {{ detail }}
-                {%- endfor %}
-            </td>
-            <td><a href="https://www.facebook.com/groups/{{ config.group_id }}/permalink/{{ config.post_id }}?comment_id={{ comment.id }}">x</a></td>
-            {% endif %}
-        </tr>
-        {%- endfor %}
-    </tbody>
+	<thead><tr><th>User</th><th>Comment</th><th>Notes</th><th width="1"></th></tr></thead>
+	<tbody>
+		{%- for comment, details in comments %}
+		<tr>
+			{%- if comment is none %}
+			<td></td><td colspan="3"><i>({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</i></td>
+			{% else %}
+			<td>{{ picture(comment.from.name, alt=false) }}</td>
+			<td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
+			<td>
+				{%- for detail in details %}
+				{{ detail }}
+				{%- endfor %}
+			</td>
+			<td><a href="https://www.facebook.com/groups/{{ config.group_id }}/permalink/{{ config.post_id }}?comment_id={{ comment.id }}">x</a></td>
+			{% endif %}
+		</tr>
+		{%- endfor %}
+	</tbody>
 </table>
