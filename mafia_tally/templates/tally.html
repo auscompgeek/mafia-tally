@@ -1,15 +1,15 @@
-{% macro picture(name, alt=true) -%}
-<img src="{{ pictures[name] }}" alt="{% if alt %}{{ name }}{% endif %}" title="{{ name }}" width="50" height="50" />
+{% macro picture(name, alt=true, alt_suffix='') -%}
+<img src="{{ pictures[name] }}" alt="{% if alt %}{{ name + alt_suffix }}{% endif %}" title="{{ name }}" width="50" height="50" />
 {%- endmacro %}
 
 <h1>Day {{ config.day_id }} Votes</h1>
 <div class="visual-tally">
     {%- for victim, voters in votes %}
-    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter) }}{% endfor %} <span class="tally-count">({{ tally.num_votes[victim] }})</span></p>
+    <p>{{ picture(victim) }} voted by {% for voter in voters %}{{ picture(voter, alt_suffix=', ') }}{% endfor %} <span class="tally-count">({{ tally.num_votes[victim] }})</span></p>
     {%- endfor %}
 
-    <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player) }}{% endfor %}</p>
-    <p>Haven't voted: {% for player in tally.get_did_not_vote()|sort %}{{ picture(player) }}{% endfor %}</p>
+    <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
+    <p>Haven't voted: {% for player in tally.get_did_not_vote()|sort %}{{ picture(player, alt_suffix=', ') }}{% endfor %}</p>
 </div>
 
 <p>Last updated: {{ now }}</p>
