@@ -11,3 +11,7 @@ a {
 .tally-count {
 	font-size: .8em;
 }
+
+td {
+	vertical-align: top;
+}
