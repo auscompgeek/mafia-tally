@@ -9,7 +9,7 @@
     {%- endfor %}
 
     <p>Abstaining: {% for player in tally.abstaining %}{{ picture(player) }}{% endfor %}</p>
-    <p>Haven't voted: {% for player in tally.get_did_not_vote() %}{{ picture(player) }}{% endfor %}</p>
+    <p>Haven't voted: {% for player in tally.get_did_not_vote()|sort %}{{ picture(player) }}{% endfor %}</p>
 </div>
 
 <p>Last updated: {{ now }}</p>
