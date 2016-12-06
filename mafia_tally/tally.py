@@ -39,6 +39,7 @@ def create_vote_tally():
 
 
 def textify_tally(tally):
+    now = arrow.now()
     stringio = StringIO()
 
     tally.display_votes(file=stringio)
@@ -48,7 +49,14 @@ def textify_tally(tally):
     tally.print_unvoted(file=stringio)
     tally.print_did_not_vote(file=stringio)
 
-    print('\nLast updated:', arrow.now(), file=stringio)
+    print('\nLast updated:', now, file=stringio)
+
+    if now >= arrow.get(config.cutoff):
+        if tally.votes:
+            lynched = max(tally.votes, key=tally.num_votes.get)
+            print(lynched, 'was lynched (probably).', file=stringio)
+        else:
+            print('Nobody was voted for lynching at the end of the day. Boo.', file=stringio)
 
     return stringio.getvalue()
 
