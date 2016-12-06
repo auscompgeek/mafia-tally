@@ -18,7 +18,7 @@ def admin():
 
         config.post_id = post_id
         config.day_id = day_id
-        config.cutoff = cutoff.isoformat()
+        config.cutoff = cutoff.to('utc').isoformat()
         config.save_day_config()
 
         dead = request.form.getlist('dead')
