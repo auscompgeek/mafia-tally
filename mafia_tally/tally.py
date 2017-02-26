@@ -8,7 +8,7 @@ from .app import app
 from . import cache
 from . import config
 from .fetcher import fetch_comments, fetch_members
-from .tallier import VotesTally
+from .tallier import VotesTally, VoteInfo
 
 
 HTML_HEADER = """\
@@ -114,8 +114,10 @@ def index():
         # FIXME can we avoid this dance?
         pictures = {member['name']: member['picture']['data']['url'] for member in fetch_members()}
 
-        page = render_template('tally.html', now=arrow.now(), tally=tally, votes=votes,
-                               config=config, comments=comment_details, pictures=pictures)
+        page = render_template(
+            'tally.html', now=arrow.now(), tally=tally, votes=votes,
+            config=config, comments=comment_details, pictures=pictures,
+            VoteInfoType=VoteInfo.Type)
         cache.write_day_html(page)
 
         return wrap_page(title, page)
@@ -145,6 +147,6 @@ def all_tallies():
 
 @app.template_filter()
 def nl2br(value):
-    result = '<br />\n'.join(escape(x) for x in value.splitlines())
+    result = '<br />\n'.join([escape(x) for x in value.splitlines()])
     result = Markup(result)
     return result

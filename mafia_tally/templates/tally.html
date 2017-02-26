@@ -16,22 +16,26 @@
 
 <h2>Comments</h2>
 <table>
-	<thead><tr><th>User</th><th>Comment</th><th>Notes</th><th width="1"></th></tr></thead>
+	<thead><tr><th>User</th><th>Comment</th><th>Notes</th><th></th></tr></thead>
 	<tbody>
 		{%- for comment, details in comments %}
 		<tr>
 			{%- if comment is none %}
-			<td></td><td colspan="3"><i>({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</i></td>
-			{% else %}
+			<td></td><td colspan="3" class="comment-skip">({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</td>
+			{%- else %}
 			<td>{{ picture(comment.from.name, alt=false) }}</td>
-			<td><b>{{ comment.from.name }}</b><p>{{ comment.message|nl2br }}</p></td>
+			<td><div class="comment-name">{{ comment.from.name }}</div><p>{{ comment.message|nl2br }}</p></td>
 			<td>
 				{%- for detail in details %}
+				{%- if detail.type is VoteInfoType.DIDNT_UNVOTE %}
+				{%- if detail.votee == 'ABSTAIN' %}Auto-unabstained.{% else %}Auto-unvoted {{ detail.votee }}.{% endif %}
+				{%- else %}
 				{{ detail }}
+				{%- endif %}
 				{%- endfor %}
 			</td>
 			<td><a href="https://www.facebook.com/groups/{{ config.group_id }}/permalink/{{ config.post_id }}?comment_id={{ comment.id }}">x</a></td>
-			{% endif %}
+			{%- endif %}
 		</tr>
 		{%- endfor %}
 	</tbody>
