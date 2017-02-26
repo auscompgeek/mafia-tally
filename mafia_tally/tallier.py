@@ -175,7 +175,7 @@ class VotesTally(object):
     def display_votes(self, templ=PRINT_VOTES_TEMPLATE, **kwargs):
         votes = self.votes
         if not votes:
-            print('No votes yet.')
+            print('No votes yet.', **kwargs)
             return
 
         num_votes = self.num_votes
