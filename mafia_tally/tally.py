@@ -135,14 +135,18 @@ def day_page(day_id):
 
 @app.route('/all')
 def all_tallies():
-    html = [html_header('All tallies')]
-    for day in range(1, config.day_id + 1):
-        try:
-            html.append(cache.read_cache('%d.html' % day))
-        except FileNotFoundError:
-            pass
-    html.append(HTML_FOOTER)
-    return ''.join(html)
+    def generate():
+        yield header
+        for day in range(1, config.day_id + 1):
+            try:
+                yield cache.read_cache('%d.html' % day)
+            except FileNotFoundError:
+                pass
+        yield HTML_FOOTER
+
+    # Generate header whilst we still have a route context
+    header = html_header('All tallies')
+    return Response(generate())
 
 
 @app.template_filter()
