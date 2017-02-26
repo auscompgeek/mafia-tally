@@ -8,10 +8,21 @@ a {
 	color: #49F;
 }
 
+.visual-tally {
+	white-space: nowrap;
+}
 .tally-count {
 	font-size: .8em;
 }
 
 td {
 	vertical-align: top;
+}
+.comment-skip {
+	font-size: .8em;
+	font-style: italic;
+	margin-bottom: .5em;
+}
+.comment-name {
+	font-weight: bold;
 }

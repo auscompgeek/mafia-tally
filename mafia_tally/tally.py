@@ -17,12 +17,12 @@ HTML_HEADER = """\
 <head>
 <meta charset="utf-8" />
 <title>{title} - Mafia Tally</title>
+<meta name="viewport" content="width=device-width" />
 <link rel="stylesheet" href="{css}" />
 </head>
-<body>
-"""
+<body>"""
 
-HTML_FOOTER = """\
+HTML_FOOTER = """
 </body>
 </html>
 """
