@@ -1,8 +1,8 @@
-import arrow
 import os
 
-from . import config
+import arrow
 
+from . import config
 
 cache_dir = os.path.join(os.path.dirname(__file__), '..', 'cache')
 
@@ -21,7 +21,6 @@ def is_stale(filename):
     - the cutoff has passed and 1 minute has passed since the last update, or
     - 5 minutes have passed since the last update.
     """
-
     now = arrow.utcnow().floor('second')
 
     try:

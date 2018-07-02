@@ -2,8 +2,7 @@ import collections
 import enum
 import re
 
-
-__all__ = 'VotesTally',
+__all__ = ('VotesTally',)
 
 PRINT_VOTES_TEMPLATE = '{0}: {1:>2} ({2})'
 ABSTAIN = 'ABSTAIN'
@@ -65,16 +64,19 @@ class VotesTally(object):
 
         if unvote_match:
             unvotee, err = self.get_votee(message, tags, unvote_match.end())
-            if err: errs.append(err)
+            if err:
+                errs.append(err)
 
             if unvotee:
                 ok, err = self.do_unvote(voter, unvotee)
                 is_vote = is_vote or ok
-                if err: errs.append(err)
+                if err:
+                    errs.append(err)
 
         if vote_match:
             votee, err = self.get_votee(message, tags, vote_match.end())
-            if err: errs.append(err)
+            if err:
+                errs.append(err)
             if votee:
                 ok, err = self.do_vote(voter, votee)
                 is_vote = is_vote or ok
@@ -181,7 +183,12 @@ class VotesTally(object):
         num_votes = self.num_votes
         len_longest_votee = max(map(len, votes))
         for votee, voters in sorted(votes.items(), key=lambda x: -num_votes[x[0]]):
-            print(templ.format(votee.rjust(len_longest_votee), num_votes[votee], str_list(voters)), **kwargs)
+            print(
+                templ.format(
+                    votee.rjust(len_longest_votee), num_votes[votee], str_list(voters)
+                ),
+                **kwargs,
+            )
 
     def print_abstaining(self, **kwargs):
         print('Abstaining:', list_display_count(self.abstaining), **kwargs)
@@ -192,7 +199,11 @@ class VotesTally(object):
             print('Unvoted:', list_display_count(unvoted), **kwargs)
 
     def print_did_not_vote(self, **kwargs):
-        print("Didn't vote:", list_display_count(sorted(self.get_did_not_vote())), **kwargs)
+        print(
+            "Didn't vote:",
+            list_display_count(sorted(self.get_did_not_vote())),
+            **kwargs,
+        )
 
 
 def list_display_count(it):

@@ -1,33 +1,31 @@
-import arrow
-from flask import request, render_template
+# from logging.config import dictConfig
 
-from .app import app
-from . import config
+from flask import Flask
+
+from . import admin
 from . import tally
 
+'''
+dictConfig(
+    {
+        'version': 1,
+        'formatters': {
+            'default': {
+                'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+            }
+        },
+        'handlers': {
+            'wsgi': {
+                'class': 'logging.StreamHandler',
+                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'formatter': 'default',
+            }
+        },
+        'root': {'level': 'INFO', 'handlers': ['wsgi']},
+    }
+)
+'''
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    if request.method == 'GET':
-        return render_template('admin.html', config=config)
-
-    if config.check_admin_password(request.form['password']):
-        post_id = int(request.form['post_id'])
-        day_id = int(request.form['day_id'])
-        cutoff = arrow.get(request.form['cutoff']).floor('second')
-
-        config.post_id = post_id
-        config.day_id = day_id
-        config.cutoff = cutoff.to('utc').isoformat()
-        config.save_day_config()
-
-        dead = request.form.getlist('dead')
-        if dead:
-            for player in dead:
-                config.players.remove(player)
-            config.save_players()
-
-        return 'Success!'
-    else:
-        app.logger.warning('Incorrect password: %s', request.form['password'])
-        return 'Incorrect password.'
+app = Flask(__name__)
+app.register_blueprint(tally.bp)
+app.register_blueprint(admin.bp)

@@ -3,7 +3,6 @@ import os
 
 import werkzeug.security
 
-
 config_dir = os.path.join(os.path.dirname(__file__), '..', 'config')
 get_path = lambda filename: os.path.join(config_dir, filename)
 day_config_file = get_path('day.json')
@@ -62,7 +61,9 @@ def load():
 
 def save_day_config():
     with open(day_config_file, 'w') as f:
-        json.dump({'post_id': post_id, 'day_id': day_id, 'cutoff': cutoff}, f, indent='\t')
+        json.dump(
+            {'post_id': post_id, 'day_id': day_id, 'cutoff': cutoff}, f, indent='\t'
+        )
 
 
 def save_players():
