@@ -27,7 +27,7 @@
 			<td><div class="comment-name">{{ comment.from.name }}</div><p>{{ comment.message|nl2br }}</p></td>
 			<td>
 				{%- for detail in details %}
-				{%- if detail.type is VoteInfoType.DIDNT_UNVOTE %}
+				{%- if detail.type == VoteInfoType.DIDNT_UNVOTE %}
 				{%- if detail.votee == 'ABSTAIN' %}Auto-unabstained.{% else %}Auto-unvoted {{ detail.votee }}.{% endif %}
 				{%- else %}
 				{{ detail }}
