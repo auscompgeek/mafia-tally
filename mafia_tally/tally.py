@@ -95,45 +95,50 @@ def day_text(day_id):
         abort(404)
 
 
+def make_html_tally(tally, comments):
+    num_skipped = 0
+    comment_details = []
+
+    for comment in comments:
+        is_vote, details = tally.parse_comment(comment)
+        if is_vote:
+            if num_skipped:
+                comment_details.append((None, num_skipped))
+                num_skipped = 0
+            comment_details.append((comment, details))
+        else:
+            num_skipped += 1
+
+    votes = sorted(tally.votes.items(), key=lambda x: -tally.num_votes[x[0]])
+
+    # FIXME can we avoid this dance?
+    # FIXME well I guess we'll have to now that I can't do this
+    pictures = {
+        # member['name']: member['picture']['data']['url']
+        # for member in fetch_members()
+    }
+
+    return render_template(
+        'tally.html',
+        now=arrow.now(),
+        tally=tally,
+        votes=votes,
+        config=config,
+        comments=comment_details,
+        pictures=pictures,
+        VoteInfoType=VoteInfo.Type,
+    )
+
+
 @bp.route('/')
 def index():
     title = 'Day %d Votes' % config.day_id
     if cache.day_html_is_stale():
         comments = fetch_comments()
         tally = create_vote_tally()
-        num_skipped = 0
-        comment_details = []
-
-        for comment in comments:
-            is_vote, details = tally.parse_comment(comment)
-            if is_vote:
-                if num_skipped:
-                    comment_details.append((None, num_skipped))
-                    num_skipped = 0
-                comment_details.append((comment, details))
-            else:
-                num_skipped += 1
+        page = make_html_tally(tally, comments)
 
         cache.write_day_text(textify_tally(tally))
-
-        votes = sorted(tally.votes.items(), key=lambda x: -tally.num_votes[x[0]])
-
-        # FIXME can we avoid this dance?
-        pictures = {
-            member['name']: member['picture']['data']['url']
-            for member in fetch_members()
-        }
-
-        page = render_template(
-            'tally.html',
-            now=arrow.now(),
-            tally=tally,
-            votes=votes,
-            config=config,
-            comments=comment_details,
-            pictures=pictures,
-            VoteInfoType=VoteInfo.Type,
-        )
         cache.write_day_html(page)
 
         return wrap_page(title, page)
