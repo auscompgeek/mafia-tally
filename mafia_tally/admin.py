@@ -5,11 +5,11 @@ from flask import Blueprint, render_template, request
 
 from . import config
 
-bp = Blueprint('admin', __name__)
+bp = Blueprint('admin', __name__, url_prefix='/admin')
 logger = logging.getLogger(__name__)
 
 
-@bp.route('/admin', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
 def admin():
     if request.method == 'GET':
         return render_template('admin.html', config=config)
@@ -34,3 +34,9 @@ def admin():
     else:
         logger.warning('Incorrect password: %s', request.form['password'])
         return 'Incorrect password.'
+
+
+@bp.route('/reload')
+def reload():
+    config.load()
+    return 'Success!'
