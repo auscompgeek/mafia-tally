@@ -125,6 +125,11 @@ def make_html_tally(tally: VotesTally, comments: List[dict]) -> str:
     }
     pictures.update(config.pics)
 
+    for comment in comments:
+        for tag in comment.get('message_tags', ()):
+            if tag['name'] not in pictures:
+                pictures[tag['name']] = 'https://graph.facebook.com/{id}/picture'.format_map(tag)
+
     return render_template(
         'tally.html',
         now=arrow.now(),
