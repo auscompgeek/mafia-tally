@@ -24,7 +24,7 @@
 			<td></td><td colspan="3" class="comment-skip">({{ details }} comment{{ 1*(details != 1) * 's' }} skipped)</td>
 			{%- else %}
 			<td>{% if comment.from %}{{ user(comment.from.name, alt=false) }}{% endif %}</td>
-			<td><div class="comment-name">{% if comment.from %}{{ comment.from.name }}{% else %}UNKNOWN VOTER{% endif %}</div><p>{{ comment.message|nl2br }}</p></td>
+			<td><div class="comment-name">{% if comment.from %}{{ comment.from.name }}{% else %}UNKNOWN VOTER - comment ID {{ comment.id }}{% endif %}</div><p>{{ comment.message|nl2br }}</p></td>
 			<td>
 				{%- for detail in details %}
 				{%- if detail.type == VoteInfoType.DIDNT_UNVOTE %}
