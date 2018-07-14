@@ -1,4 +1,5 @@
 import logging
+from typing import List, Optional
 
 import requests
 
@@ -13,7 +14,7 @@ MEMBERS_URI_TEMPLATE = 'https://graph.facebook.com/v2.2/{group_id}/members?field
 session = requests.Session()
 
 
-def fetch_comments():
+def fetch_comments() -> Optional[List[dict]]:
     r = session.get(
         COMMENTS_URI_TEMPLATE.format(
             access_token=config.get_access_token(), post_id=config.post_id

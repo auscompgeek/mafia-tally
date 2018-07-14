@@ -14,7 +14,7 @@ def print_player_list():
         print(i, player, sep='. ', file=sys.stderr)
 
 
-def input_player():
+def input_player() -> str:
     players = sorted(config.players)
 
     print('Pick a player: ', file=sys.stderr, end='')

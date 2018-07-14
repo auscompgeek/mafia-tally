@@ -1,5 +1,6 @@
 import json
 from io import StringIO
+from typing import List, Optional, Tuple, Union
 
 import arrow
 from flask import (
@@ -42,13 +43,13 @@ html_header = lambda title: HTML_HEADER.format(
 wrap_page = lambda title, page: html_header(title) + page + HTML_FOOTER
 
 
-def create_vote_tally():
+def create_vote_tally() -> VotesTally:
     return VotesTally(
         voting=config.players, votables=config.players, cutoff=config.cutoff
     )
 
 
-def textify_tally(tally):
+def textify_tally(tally: VotesTally) -> str:
     now = arrow.now()
     s = StringIO()
 
@@ -89,16 +90,16 @@ def text():
 
 
 @bp.route('/<int:day_id>.txt')
-def day_text(day_id):
+def day_text(day_id: int):
     try:
         return send_from_directory(cache.cache_dir, '%d.txt' % day_id)
     except FileNotFoundError:
         abort(404)
 
 
-def make_html_tally(tally, comments):
+def make_html_tally(tally: VotesTally, comments: List[dict]) -> str:
     num_skipped = 0
-    comment_details = []
+    comment_details: List[Tuple[Optional[dict], Union[int, List[VoteInfo], None]]] = []
     with open(config.get_path('commenters.json')) as f:
         commenters = json.load(f)
 
@@ -153,14 +154,14 @@ def index():
 
 
 @bp.route('/<int:day_id>')
-def day_page(day_id):
+def day_page(day_id: int):
     try:
         return wrap_page('Day %d Votes' % day_id, cache.read_cache('%d.html' % day_id))
     except FileNotFoundError:
         abort(404)
 
 
-def generate_all(header):
+def generate_all(header: str):
     # header needs to be created whilst we still have a route context
     yield header
     for day in range(1, config.day_id + 1):
@@ -177,7 +178,7 @@ def all_tallies():
 
 
 @bp.app_template_filter()
-def nl2br(value):
+def nl2br(value: str) -> Markup:
     result = '<br />\n'.join([escape(x) for x in value.splitlines()])
     result = Markup(result)
     return result

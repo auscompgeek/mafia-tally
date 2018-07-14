@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Dict, Set
 
 import werkzeug.security
 
@@ -10,25 +11,25 @@ access_token_file = get_path('access_token.txt')
 players_file = get_path('players.txt')
 admin_passhash_file = get_path('passhash.txt')
 
-group_id = 328346913872436  # lol let's hardcode this
-post_id = None  # type: int
-day_id = None  # type: int
-cutoff = None  # type: str
-players = None  # type: set
-pics = None  # type: dict
+group_id: int = 328346913872436  # lol let's hardcode this
+post_id: int
+day_id: int
+cutoff: str
+players: Set[str]
+pics: Dict[str, str]
 
 
-def get_access_token():
+def get_access_token() -> str:
     with open(access_token_file) as f:
         return f.read().strip()
 
 
-def get_passhash():
+def get_passhash() -> str:
     with open(admin_passhash_file) as f:
         return f.read().strip()
 
 
-def check_admin_password(password):
+def check_admin_password(password: str) -> bool:
     return werkzeug.security.check_password_hash(get_passhash(), password)
 
 
@@ -45,7 +46,7 @@ def load_day_config():
     cutoff = day_info['cutoff']
 
 
-def get_players():
+def get_players() -> Set[str]:
     with open(players_file) as f:
         return set(map(str.strip, f))
 

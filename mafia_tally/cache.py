@@ -8,16 +8,16 @@ from . import config
 cache_dir = os.path.join(os.path.dirname(__file__), '..', 'cache')
 
 
-def get_path(filename):
+def get_path(filename: str) -> str:
     return os.path.join(cache_dir, filename)
 
 
 @functools.wraps(open)
-def get_file(filename, *args, **kwargs):
+def get_file(filename: str, *args, **kwargs):
     return open(get_path(filename), *args, **kwargs)
 
 
-def is_stale(filename):
+def is_stale(filename: str) -> bool:
     """
     Return whether the current cached file is stale.
 
@@ -40,35 +40,35 @@ def is_stale(filename):
     return mtime < cutoff and mtime <= now.replace(minutes=-5 if now < cutoff else -1)
 
 
-def day_html_is_stale():
+def day_html_is_stale() -> bool:
     return is_stale('%d.html' % config.day_id)
 
 
-def day_text_is_stale():
+def day_text_is_stale() -> bool:
     return is_stale('%d.txt' % config.day_id)
 
 
-def read_cache(filename):
+def read_cache(filename: str) -> str:
     with get_file(filename) as f:
         return f.read()
 
 
-def read_day_html():
+def read_day_html() -> str:
     return read_cache('%d.html' % config.day_id)
 
 
-def read_day_text():
+def read_day_text() -> str:
     return read_cache('%d.txt' % config.day_id)
 
 
-def write_cache(filename, contents):
+def write_cache(filename: str, contents: str):
     with get_file(filename, 'w') as f:
         f.write(contents)
 
 
-def write_day_html(contents):
+def write_day_html(contents: str):
     write_cache('%d.html' % config.day_id, contents)
 
 
-def write_day_text(contents):
+def write_day_text(contents: str):
     write_cache('%d.txt' % config.day_id, contents)

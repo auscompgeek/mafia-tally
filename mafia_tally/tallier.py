@@ -1,6 +1,7 @@
 import collections
 import enum
 import re
+from typing import AbstractSet, Dict, List, Mapping, Optional, Set, Tuple
 
 __all__ = ('VotesTally',)
 
@@ -28,50 +29,68 @@ class VoteInfo(object):
 
     __slots__ = ('type', 'votee')
 
-    def __init__(self, t, votee=None):
+    def __init__(self, t: Type, votee: str = None) -> None:
         self.type = t
         self.votee = votee
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.votee is None:
             return 'VoteInfo({})'.format(self.type.name)
         return 'VoteInfo({}, {!r})'.format(self.type.name, self.votee)
 
 
 class VotesTally(object):
-    def __init__(self, voting, votables, cutoff, weights=None):
-        self.votes = collections.OrderedDict()  # type: Dict[str, List[str]]
-        self.num_votes = collections.defaultdict(int)  # type: Dict[str, int]
-        self.voter_votes = {}  # type: Dict[str, str]
-        self.have_voted = set()  # type: Set[str]
-        self.abstaining = []  # type: List[str]
-        self.voting = voting  # type: AbstractSet[str]
-        self.votables = votables  # type: AbstractSet[str]
-        self.cutoff = cutoff
-        self.vote_weights = weights or {}  # type: Dict[str, int]
+    votes: Dict[str, List[str]]
+    num_votes: Dict[str, int]
+    voter_votes: Dict[str, str]
+    have_voted: Set[str]
+    abstaining: List[str]
+    voting: AbstractSet[str]
+    votables: AbstractSet[str]
+    cutoff: str
+    vote_weights: Mapping[str, int]
 
-    def parse_comment(self, comment):
-        timestamp = comment['created_time']
-        message = comment['message']
+    def __init__(
+        self,
+        voting: AbstractSet[str],
+        votables: AbstractSet[str],
+        cutoff: str,
+        weights: Mapping[str, int] = None,
+    ) -> None:
+        self.votes = collections.OrderedDict()
+        self.num_votes = collections.defaultdict(int)
+        self.voter_votes = {}
+        self.have_voted = set()
+        self.abstaining = []
+        self.voting = voting
+        self.votables = votables
+        self.cutoff = cutoff
+        self.vote_weights = weights or {}
+
+    def parse_comment(self, comment: dict) -> Tuple[bool, Optional[List[VoteInfo]]]:
+        timestamp: str = comment['created_time']
+        message: str = comment['message']
 
         if timestamp >= self.cutoff:
             return False, None
 
-        voter = comment.get('from', {}).get('name')
+        voter: str = comment.get('from', {}).get('name')
         if voter is not None and voter not in self.voting:
             return False, None
 
-        tags = {tag['offset']: tag['name'] for tag in comment.get('message_tags', [])}
+        tags: Mapping[int, str] = {
+            tag['offset']: tag['name'] for tag in comment.get('message_tags', [])
+        }
         vote_match = find_vote(message)
         unvote_match = find_unvote(message)
 
-        errs = []
+        all_errs: List[VoteInfo] = []
         is_vote = False
 
         if unvote_match:
             unvotee, err = self.get_votee(message, tags, unvote_match.end())
             if err:
-                errs.append(err)
+                all_errs.append(err)
 
             if unvotee:
                 if voter is not None:
@@ -81,28 +100,30 @@ class VotesTally(object):
                     ok, err = True, VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)
                 is_vote = is_vote or ok
                 if err:
-                    errs.append(err)
+                    all_errs.append(err)
 
         if vote_match:
             votee, err = self.get_votee(message, tags, vote_match.end())
             if err:
-                errs.append(err)
+                all_errs.append(err)
             if votee:
                 if voter is not None:
-                    ok, err = self.do_vote(voter, votee)
+                    ok, errs = self.do_vote(voter, votee)
                 else:
                     # HACK
                     ok = True
-                    if not errs:
-                        err = [VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)]
+                    if not all_errs:
+                        errs = [VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)]
                     else:
-                        err = []
+                        errs = []
                 is_vote = is_vote or ok
-                errs += err
+                all_errs += errs
 
-        return is_vote, errs
+        return is_vote, all_errs
 
-    def get_votee(self, message, tags, offset):
+    def get_votee(
+        self, message: str, tags: Mapping[int, str], offset: int
+    ) -> Tuple[Optional[str], Optional[VoteInfo]]:
         if offset in tags:
             return tags[offset], None
 
@@ -121,8 +142,8 @@ class VotesTally(object):
 
         return possible[0], None
 
-    def do_vote(self, voter, votee):
-        #votee = real_name_map.get(votee, votee)
+    def do_vote(self, voter: str, votee: str) -> Tuple[bool, List[VoteInfo]]:
+        # votee = real_name_map.get(votee, votee)
         votes = self.votes
         voter_votes = self.voter_votes
         self.have_voted.add(voter)
@@ -148,7 +169,9 @@ class VotesTally(object):
 
         return True, err
 
-    def do_unvote(self, voter, votee):
+    def do_unvote(
+        self, voter: str, votee: str = None
+    ) -> Tuple[bool, Optional[VoteInfo]]:
         voter_votes = self.voter_votes
 
         if voter not in voter_votes:
@@ -174,7 +197,7 @@ class VotesTally(object):
 
         return True, None
 
-    def unabstain(self, voter):
+    def unabstain(self, voter: str):
         voter_votes = self.voter_votes
 
         assert voter_votes[voter] == ABSTAIN
@@ -182,17 +205,17 @@ class VotesTally(object):
 
         self.abstaining.remove(voter)
 
-    def abstain(self, voter):
+    def abstain(self, voter: str):
         self.abstaining.append(voter)
         self.voter_votes[voter] = ABSTAIN
 
-    def get_did_not_vote(self):
+    def get_did_not_vote(self) -> AbstractSet[str]:
         return self.voting - self.have_voted
 
-    def get_no_registered_vote(self):
+    def get_no_registered_vote(self) -> Set[str]:
         return self.have_voted.difference(self.abstaining, self.voter_votes)
 
-    def display_votes(self, templ=PRINT_VOTES_TEMPLATE, **kwargs):
+    def display_votes(self, templ: str = PRINT_VOTES_TEMPLATE, **kwargs):
         votes = self.votes
         if not votes:
             print('No votes yet.', **kwargs)
@@ -224,5 +247,5 @@ class VotesTally(object):
         )
 
 
-def list_display_count(it):
+def list_display_count(it: list) -> str:
     return '{0} ({1})'.format(len(it), str_list(it))
