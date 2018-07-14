@@ -1,3 +1,4 @@
+import functools
 import os
 
 import arrow
@@ -9,6 +10,11 @@ cache_dir = os.path.join(os.path.dirname(__file__), '..', 'cache')
 
 def get_path(filename):
     return os.path.join(cache_dir, filename)
+
+
+@functools.wraps(open)
+def get_file(filename, *args, **kwargs):
+    return open(get_path(filename), *args, **kwargs)
 
 
 def is_stale(filename):
@@ -43,7 +49,7 @@ def day_text_is_stale():
 
 
 def read_cache(filename):
-    with open(get_path(filename)) as f:
+    with get_file(filename) as f:
         return f.read()
 
 
@@ -56,7 +62,7 @@ def read_day_text():
 
 
 def write_cache(filename, contents):
-    with open(get_path(filename), 'w') as f:
+    with get_file(filename, 'w') as f:
         f.write(contents)
 
 

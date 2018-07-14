@@ -7,8 +7,8 @@ __all__ = ('VotesTally',)
 PRINT_VOTES_TEMPLATE = '{0}: {1:>2} ({2})'
 ABSTAIN = 'ABSTAIN'
 
-find_vote_re = re.compile(r'\bV(?:OTE|ote):\s+')
-find_unvote_re = re.compile(r'\bU(?:NVOTE|nvote):\s+')
+find_vote_re = re.compile(r'^V(?:OTE|ote):\s+', re.MULTILINE)
+find_unvote_re = re.compile(r'^U(?:NVOTE|nvote):\s+', re.MULTILINE)
 
 find_vote = find_vote_re.search
 find_unvote = find_unvote_re.search
@@ -24,6 +24,7 @@ class VoteInfo(object):
         UNVOTABLE = 3
         HASNT_VOTED = 4
         UNVOTING_OTHER = 5
+        UNKNOWN_VOTER = 6
 
     __slots__ = ('type', 'votee')
 
@@ -32,6 +33,8 @@ class VoteInfo(object):
         self.votee = votee
 
     def __repr__(self):
+        if self.votee is None:
+            return 'VoteInfo({})'.format(self.type.name)
         return 'VoteInfo({}, {!r})'.format(self.type.name, self.votee)
 
 
@@ -48,11 +51,14 @@ class VotesTally(object):
         self.vote_weights = weights or {}  # type: Dict[str, int]
 
     def parse_comment(self, comment):
-        voter = comment['from']['name']
         timestamp = comment['created_time']
         message = comment['message']
 
-        if timestamp >= self.cutoff or voter not in self.voting:
+        if timestamp >= self.cutoff:
+            return False, None
+
+        voter = comment.get('from', {}).get('name')
+        if voter is not None and voter not in self.voting:
             return False, None
 
         tags = {tag['offset']: tag['name'] for tag in comment.get('message_tags', [])}
@@ -68,7 +74,11 @@ class VotesTally(object):
                 errs.append(err)
 
             if unvotee:
-                ok, err = self.do_unvote(voter, unvotee)
+                if voter is not None:
+                    ok, err = self.do_unvote(voter, unvotee)
+                else:
+                    # HACK
+                    ok, err = True, VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)
                 is_vote = is_vote or ok
                 if err:
                     errs.append(err)
@@ -78,7 +88,11 @@ class VotesTally(object):
             if err:
                 errs.append(err)
             if votee:
-                ok, err = self.do_vote(voter, votee)
+                if voter is not None:
+                    ok, err = self.do_vote(voter, votee)
+                else:
+                    # HACK
+                    ok, err = True, [VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)]
                 is_vote = is_vote or ok
                 errs += err
 

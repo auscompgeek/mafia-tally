@@ -12,7 +12,7 @@ from flask import (
 from jinja2 import Markup, escape
 
 from . import cache, config
-from .fetcher import fetch_comments, fetch_members
+from .fetcher import fetch_comments
 from .tallier import VoteInfo, VotesTally
 
 HTML_HEADER = """\
@@ -111,11 +111,10 @@ def make_html_tally(tally, comments):
 
     votes = sorted(tally.votes.items(), key=lambda x: -tally.num_votes[x[0]])
 
-    # FIXME can we avoid this dance?
-    # FIXME well I guess we'll have to now that I can't do this
     pictures = {
-        # member['name']: member['picture']['data']['url']
-        # for member in fetch_members()
+        comment['from']['name']: comment['from']['picture']['data']['url']
+        for comment in comments
+        if 'picture' in comment.get('from', {})
     }
 
     return render_template(
