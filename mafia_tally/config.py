@@ -15,6 +15,7 @@ post_id = None  # type: int
 day_id = None  # type: int
 cutoff = None  # type: str
 players = None  # type: set
+pics = None  # type: dict
 
 
 def get_access_token():
@@ -54,9 +55,16 @@ def load_players():
     players = get_players()
 
 
+def load_pics():
+    global pics
+    with open(get_path('pics.json')) as f:
+        pics = json.load(f)
+
+
 def load():
     load_day_config()
     load_players()
+    load_pics()
 
 
 def save_day_config():

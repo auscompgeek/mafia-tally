@@ -1,3 +1,4 @@
+import json
 import logging
 
 import arrow
@@ -39,4 +40,24 @@ def admin():
 @bp.route('/reload')
 def reload():
     config.load()
+    return 'Success!'
+
+
+@bp.route('/add-commenter', methods=['GET', 'POST'])
+def add_commenter():
+    if request.method == 'GET':
+        return render_template('add-commenter.html', players=config.players)
+
+    if not config.check_admin_password(request.form['password']):
+        logger.warning('Incorrect password: %s', request.form['password'])
+        return 'Incorrect password.'
+
+    with open(config.get_path('commenters.json')) as f:
+        commenters = json.load(f)
+
+    commenters[request.form['comment_id']] = request.form['player_name']
+
+    with open(config.get_path('commenters.json'), 'w') as f:
+        json.dump(commenters, f)
+
     return 'Success!'

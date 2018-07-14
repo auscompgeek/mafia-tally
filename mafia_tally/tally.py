@@ -1,3 +1,4 @@
+import json
 from io import StringIO
 
 import arrow
@@ -98,8 +99,13 @@ def day_text(day_id):
 def make_html_tally(tally, comments):
     num_skipped = 0
     comment_details = []
+    with open(config.get_path('commenters.json')) as f:
+        commenters = json.load(f)
 
     for comment in comments:
+        if 'from' not in comment and comment['id'] in commenters:
+            comment['from'] = {'name': commenters[comment['id']]}
+
         is_vote, details = tally.parse_comment(comment)
         if is_vote:
             if num_skipped:
@@ -116,6 +122,7 @@ def make_html_tally(tally, comments):
         for comment in comments
         if 'picture' in comment.get('from', {})
     }
+    pictures.update(config.pics)
 
     return render_template(
         'tally.html',
