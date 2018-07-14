@@ -92,7 +92,11 @@ class VotesTally(object):
                     ok, err = self.do_vote(voter, votee)
                 else:
                     # HACK
-                    ok, err = True, [VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)]
+                    ok = True
+                    if not errs:
+                        err = [VoteInfo(VoteInfo.Type.UNKNOWN_VOTER)]
+                    else:
+                        err = []
                 is_vote = is_vote or ok
                 errs += err
 
