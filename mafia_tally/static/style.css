@@ -1,8 +1,7 @@
 body {
 	background: #222;
 	color: #DDD;
-	/*font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;*/
-	font-family: Liberation Mono, Consolas, monospace;
+	font-family: Liberation Mono, Consolas, monospace, emoji;
 }
 a {
 	color: #49F;
